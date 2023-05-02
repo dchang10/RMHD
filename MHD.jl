@@ -24,6 +24,14 @@ function Trixi.cons2prim(u, equation::mhd_equation)
   return SVector(ρ, vx, vy, vz, Bx, By, Bz, p)
 end
 
+function density_pressure(u, equations::mhd_equation)
+  ρ, vx, vy, vz, Bx, By, Bz, E = u
+  γ = 2.0
+  p = (γ-1.0)*(E - ρ/2*(vx^2+vy^2+vz^2) - 1/2*(Bx^2+By^2+Bz^2))
+  rho_times_p = ρ * p
+  return rho_times_p
+ end
+
 Trixi.flux(u, n, equation::mhd_equation) = begin
   ρ, vx, vy, vz, Bx, By, Bz, E = u
 
@@ -40,6 +48,16 @@ Trixi.flux(u, n, equation::mhd_equation) = begin
     Bz*vx-Bx*vz,
     (E+ps)*vx - Bx*(Bx*vx+By*vy+Bz*vz)
   )
+end
+function Trixi.max_abs_speed_naive(u_ll, u_rr, orientation, equation::Main.MHD.mhd_equation)
+  _, vx_ll, vy_ll, vz_ll, _, _, _, _ = u_ll
+  _, vx_rr, vy_rr, vz_rr, _, _, _, _ = u_rr
+
+  v_ll = vx_ll
+  v_rr = vx_rr
+
+  return max(abs(v_ll), abs(v_rr)) 
+
 end
 
 end
