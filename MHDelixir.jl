@@ -6,17 +6,18 @@ equation = MHD.mhd_equation()
 
 function initial_condition(x, t, equation::MHD.mhd_equation)
   if x[1] < 0.0
-    return Trixi.prim2cons((1,0,0,0,0,1,0,1), equation)
+                            #ρ, vx, vy, vz, Bx,  By, Bz, p = prim
+    return Trixi.prim2cons(( 1, 0,  0,  0,  0.75,1,  0,  1), equation)
   else
-    return Trixi.prim2cons((0.125,0,0,0,0,-1,0,0.1), equation)
+    return Trixi.prim2cons((0.125,0,0,0,0.75,-1,0,0.1), equation)
   end
 end
 
 function boundary_in(x, t, equation::MHD.mhd_equation)
-    return Trixi.prim2cons((1,0,0,0,0,1,0,1), equation)
+    return Trixi.prim2cons((1,0,0,0,0.75,1,0,1), equation)
 end
 function boundary_out(x, t, equation::MHD.mhd_equation)
-    return Trixi.prim2cons((0.125,0,0,0,0,-1,0,0.1), equation)
+    return Trixi.prim2cons((0.125,0,0,0,0.75,-1,0,0.1), equation)
 end
 boundary_conditions = (x_neg=Trixi.BoundaryConditionDirichlet(boundary_in),
                        x_pos=Trixi.BoundaryConditionDirichlet(boundary_out))
